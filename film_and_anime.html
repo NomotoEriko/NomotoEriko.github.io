@@ -3,32 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Film and Anime</title>
+    <link href="css/main.css" rel="stylesheet" media="all">
+    <link href="css/likes.css" rel="stylesheet" media="all">
 </head>
 <body>
-    <p>観賞した映画やアニメの紹介をします．</p>
-    <section id="film">
+    <section id="film" class="top-elem clearfix">
         <h2>映画</h2>
-        <table>
-            <tr>
-                <th>タイトル</th>
-                <th>作者</th>
-                <th>視聴日</th>
-                <th>視聴のきっかけ</th>
-                <th>感想</th>
-            </tr>
-        </table>
+        <div class="main-contents">
+            <div class="floating-elements">
+                <table>
+                    <tr>
+                        <th class="short">タイトル</th>
+                        <th class="short">作者</th>
+                        <th class="short">視聴日</th>
+                        <th class="long">視聴のきっかけ</th>
+                        <th class="long">感想</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </section>
-    <section id="anime">
+    <section id="anime" class="clearfix">
         <h2>アニメ</h2>
-        <table>
-            <tr>
-                <th>タイトル</th>
-                <th>作者</th>
-                <th>視聴日</th>
-                <th>視聴のきっかけ</th>
-                <th>感想</th>
-            </tr>
-        </table>
+        <div class="main-contents">
+            <div class="floating-elements">
+                <table>
+                    <tr>
+                        <th class="short">タイトル</th>
+                        <th class="short">作者</th>
+                        <th class="short">視聴日</th>
+                        <th class="long">視聴のきっかけ</th>
+                        <th class="long">感想</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </section>
+
+    <footer>
+        <p><a href="index.html" class="btn">戻る</a></p>
+    </footer>
 </body>
 </html>
