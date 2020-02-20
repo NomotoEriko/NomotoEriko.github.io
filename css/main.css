@@ -4,6 +4,12 @@ body{
     background-color: #dffeff;
 }
 
+.clearfix::after{
+    content: "";
+    display: block;
+    clear: both;
+}
+
 h2{
     color: #1c3f1c;
     background-color: #b1e2bc;
@@ -13,7 +19,6 @@ h2{
     text-align: center;
     padding: 5px 20px;
     margin-bottom: 5px;
-    clear: left;
 }
 
 h3{
@@ -23,10 +28,13 @@ h3{
 a{
     color: #1c3f1c;
     background-color: #b1e2bc;
+    font-size: 15px;
     font-weight: bold;
     margin-left: 3px;
     border-radius: 5px;
-    padding: 1px;
+    padding-top: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
     text-align: center;
     text-decoration: none;
 }
@@ -37,9 +45,24 @@ a:hover{
     font-weight: bold;
 }
 
-a.btn{
-    font-size: 18px;
-    padding: 5px;
+td{
+    text-align: left;
+}
+
+#base-information h2{
+    margin-top: 0;
+}
+
+.main-contents {
+    float: left;
+    position: relative;
+    left: 50%;
+}
+
+.floating-elements {
+    float: left;
+    position: relative;
+    left: -50%;
 }
 
 #base-information img{
@@ -54,9 +77,44 @@ a.btn{
 
 #base-information th{
     text-align: left;
-    border-right: #142814 1px dotted;
+    border-right: #1c3f1c 1px dotted;
 }
 
-td{
-    text-align: left;
+#history table{
+    margin: auto;
+}
+
+#history th{
+    border-bottom: #1c3f1c 1px dotted;
+}
+
+#history td{
+    margin-bottom: 3px;
+    border-bottom: #9ecaa7 1px dotted;
+}
+
+.hist-date {
+    vertical-align: top;
+    padding-right: 10px;
+}
+
+#Like section {
+    padding: 0 20px;
+    margin-bottom: 25px;
+}
+
+#Like h3{
+    margin: 0 0;
+}
+
+#Like p{
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+a.btn{
+    font-size: 16px;
+    padding: 6px 5px 3px 5px;
+    margin-left: 10px;
+    vertical-align: 3px;
 }
