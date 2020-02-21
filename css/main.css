@@ -120,8 +120,8 @@ a.btn{
 }
 
 footer{
-    position: absolute;
-    bottom: 0;
+    position: sticky;
+    bottom: 10px;
     left: 0;
     float: bottom;
 }
