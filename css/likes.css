@@ -1,0 +1,17 @@
+th{
+    border-bottom: #1c3f1c 1px dotted;
+}
+
+td{
+    border-bottom: #9ecaa7 1px dotted;
+    vertical-align: top;
+}
+
+.short{
+    width: 150px;
+    text-align: center;
+}
+
+.long{
+    width: 350px;
+}
