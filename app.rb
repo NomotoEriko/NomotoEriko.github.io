@@ -13,27 +13,33 @@ class App < Sinatra::Base
 
   before do
     content_type :json
-    @@git_client = File.exist?('dist') ? Git.open('dist', :log => @@logger) : clone
-    @@git_client.checkout('master')
-    @@git_client.pull
+    @edit_file = false
   end
 
   after do
-    if @@git_client.current_branch != 'master'
-      @@git_client.add
-      @@git_client.commit(@@git_client.current_branch)
-      @@git_client.push(remote="origin", branch=@@git_client.current_branch)
-      @@git_client.checkout('master')
+    if @edit_file
+      Thread.new do
+        @@m.synchronize do
+          update_and_commit
+        end
+      end
     end
   end
 
   @@logger = Logger.new('/tmp/sample-app.log')
+  @@m = Thread::Mutex.new
+  @edit_file = false
+  @data = nil
 
   get '/' do
     'OK'
   end
 
   post '/add' do
+    return {
+      response_type: 'ephemeral',
+      text: '処理中です。少し時間をおいて再度お試しください。'
+    }.to_json if @@m.locked?
     data = URI.decode_www_form(request.body.read).to_h
     text_data = data['text']&.split
     return {
@@ -47,25 +53,19 @@ class App < Sinatra::Base
     }.to_json unless %w(book film anime).include?(type)
     date = Time.now.strftime('%Y.%m.%d')
 
-    new_elem = [
-      '<tr>',
-      '  <td class="short">' + title + '</td>',
-      '  <td class="short">' + author + '</td>',
-      '  <td class="short">' + date + '</td>',
-      '  <td class="long">' + trigger + '</td>',
-      '  <td class="long">' + impression + '</td>',
-      '</tr>'
-    ].join("\n")
-
-    path = commit do
-      content = File.readlines(File.join('dist', "#{type}.html"))
-      index = content.find_index do |line|
-        line.match?(/\<\/tr\>/)
-      end + 1
-      File.open(File.join('dist', "#{type}.html"), 'w') do |f|
-        f.write([content.take(index), new_elem, content.last(content.length - index)].flatten.join)
-      end
-    end
+    branch = Time.now.strftime('created-by-app-%Y-%m-%d-%H-%M')
+    @data = {
+      type: type,
+      title: title,
+      author: author,
+      trigger: trigger,
+      impression: impression,
+      date: date,
+      branch: branch
+    }
+    uri = git_client.remote.url.split('@').last
+    path = "#{uri.slice(0, uri.length - 4)}/tree/#{branch}"
+    @edit_file = true
 
     return {
       response_type: 'in_channel',
@@ -73,12 +73,38 @@ class App < Sinatra::Base
     }.to_json
   end
 
-  def commit(&block)
-    name = Time.now.strftime('created-by-app-%Y-%m-%d-%H-%M')
-    @@git_client.branch(name).checkout
-    block.call
-    uri = @@git_client.remote.url.split('@').last
-    "#{uri.slice(0, uri.length - 4)}/tree/#{name}"
+  def update_and_commit
+    git_client.checkout('master')
+    git_client.pull
+
+    new_elem = [
+      '<tr>',
+      '  <td class="short">' + @data[:title] + '</td>',
+      '  <td class="short">' + @data[:author] + '</td>',
+      '  <td class="short">' + @data[:date] + '</td>',
+      '  <td class="long">' + @data[:trigger] + '</td>',
+      '  <td class="long">' + @data[:impression] + '</td>',
+      '</tr>'
+    ].join("\n")
+
+    git_client.branch(@data[:branch]).checkout
+    content = File.readlines(File.join('dist', "#{@data[:type]}.html"))
+    index = content.find_index do |line|
+      line.match?(/\<\/tr\>/)
+    end + 1
+    File.open(File.join('dist', "#{@data[:type]}.html"), 'w') do |f|
+      f.write([content.take(index), new_elem, content.last(content.length - index)].flatten.join)
+    end
+
+    git_client.add
+    git_client.commit(git_client.current_branch)
+    git_client.push(remote="origin", branch=git_client.current_branch)
+    git_client.checkout('master')
+    @edit_file = false
+  end
+
+  def git_client
+    @git_client ||= File.exist?('dist') ? Git.open('dist', :log => @@logger) : clone
   end
 
   def clone
